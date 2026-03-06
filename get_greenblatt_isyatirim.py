@@ -6,81 +6,27 @@ import time
 import warnings
 warnings.filterwarnings('ignore')
 
-BIST_TICKERS = [
-    "AEFES", "AFYON", "AGESA", "AHGAZ", "AKBNK", "AKCNS", "AKENR", "AKFEN",
-    "AKGRT", "AKSA", "AKSEN", "AKSGY", "AKSUE", "AKTAE", "AKYHO", "ALARK",
-    "ALBRK", "ALCAR", "ALFAS", "ALGYO", "ALKIM", "ALKLC", "ANELE", "ANGEN",
-    "ANHYT", "ANSGR", "ARCLK", "ARDYZ", "ARENA", "ARSAN", "ASELS", "ASGYO",
-    "ASTOR", "ATLAS", "ATAGY", "ATEKS", "AVGYO", "AVHOL", "AVOD", "AYEN",
-    "AYGAZ", "BAGFS", "BAKAB", "BANVT", "BAYRK", "BERA", "BFREN", "BIMAS",
-    "BIOEN", "BIZIM", "BJKAS", "BNTAS", "BOBET", "BOSSA", "BRISA", "BRSAN",
-    "BRYAT", "BSOKE", "BTCIM", "BUCIM", "BURCE", "BURVA", "BVSAN", "CANTE",
-    "CARFA", "CASA", "CEMAS", "CEMTS", "CEOEM", "CIMSA", "CLEBI", "CMBTN",
-    "CMENT", "COMAR", "COSMO", "CRDFA", "CRFSA", "CUSAN", "CWENE", "DAGI",
-    "DAPGM", "DARDL", "DENGE", "DERHL", "DERIM", "DESA", "DESPC", "DEVA",
-    "DGATE", "DGKLB", "DGNMO", "DITAS", "DOBUR", "DOCO", "DOGUB", "DOHOL",
-    "DOMEP", "DURDO", "DYOBY", "DZGYO", "ECILC", "ECZYT", "EDIP", "EGGUB",
-    "EGPRO", "EGSER", "EKGYO", "ELITE", "EMKEL", "EMNIS", "ENERY", "ENJSA",
-    "ENKAI", "EPLAS", "ERBOS", "ERCB", "EREGL", "ERSU", "ESCAR", "ESCOM",
-    "ESEN", "ETILR", "ETYAT", "EUHOL", "EUPWR", "EUREN", "EURO", "EUYO",
-    "EVREN", "FADE", "FENER", "FLAP", "FMIZP", "FONET", "FORMT", "FORTE",
-    "FROTO", "FZLGY", "GARAN", "GARFA", "GEDIK", "GEDZA", "GENIL", "GENTS",
-    "GEREL", "GESAN", "GIPTA", "GLBMD", "GLCVY", "GLYHO", "GMTAS", "GOKNR",
-    "GOLTS", "GOODY", "GOZDE", "GRSEL", "GSDDE", "GSDHO", "GSRAY", "GUBRF",
-    "GWIND", "GZNMI", "HALKB", "HATEK", "HDFGS", "HEDEF", "HEKTS", "HKTM",
-    "HLGYO", "HOROZ", "HTTBT", "HUNER", "HURGZ", "ICBCT", "IEYHO", "IHAAS",
-    "IHEVA", "IHGZT", "IHLAS", "IHLGM", "IHYAY", "IMASM", "INDES", "INFO",
-    "INGRM", "INTEM", "INVEO", "IPEKE", "ISATR", "ISBIR", "ISCTR", "ISYAT",
-    "ISGSY", "ISGYO", "ISKPL", "ISKUR", "ISYHO", "ITTFK", "IZFAS", "IZINV",
-    "IZMDC", "JANTS", "KAPLM", "KAREL", "KARSN", "KARTN", "KATMR", "KAYSE",
-    "KCAER", "KCHOL", "KENT", "KERVN", "KERVT", "KFEIN", "KGYO", "KLGYO",
-    "KLKIM", "KLMSN", "KLNMA", "KLRHO", "KLSER", "KMPUR", "KNFRT", "KONKA",
-    "KONTR", "KONYA", "KOPOL", "KORDS", "KOZAA", "KOZAL", "KRDMA", "KRDMB",
-    "KRDMD", "KRGYO", "KRONT", "KRSTL", "KRTEK", "KRVGD", "KSTUR", "KTLEV",
-    "KUTPO", "KUVVA", "KUYAS", "LIDER", "LIDFA", "LKMNH", "LOGO", "LRSHO",
-    "LUKSK", "MAALT", "MACKO", "MAGEN", "MAKIM", "MAKTK", "MANAS", "MARBL",
-    "MARKA", "MARTI", "MAVI", "MEDTR", "MEGAP", "MEPET", "MERCN", "MERIT",
-    "MERKO", "METRO", "METUR", "MGROS", "MHRTN", "MIATK", "MIPAZ", "MMCAS",
-    "MNDRS", "MNDTR", "MNVHO", "MOBTL", "MOGAN", "MPARK", "MRGYO", "MRSHL",
-    "MSGYO", "MTRKS", "MZHLD", "NATEN", "NETAS", "NTGAZ", "NUGYO", "NUHCM",
-    "OBAMS", "OBASE", "ODAS", "ODINE", "OFSYM", "ONCSM", "ORCAY", "ORGE",
-    "ORMA", "OSMEN", "OSTIM", "OTKAR", "OYAKC", "OYAYO", "OYLUM", "OZGYO",
-    "OZKGY", "OZRDN", "OZSUB", "PAGYO", "PAMEL", "PAPIL", "PARSN", "PASEU",
-    "PCILT", "PEGYO", "PEKGY", "PENGD", "PENTA", "PETKM", "PETUN", "PGSUS",
-    "PINSU", "PKENT", "PLTUR", "PNLSN", "POLHO", "POLTK", "PRKAB", "PRKME",
-    "PRZMA", "PSDTC", "PSGYO", "QNBFB", "QNBFL", "RAYSG", "RHEAG", "RTALB",
-    "RUBNS", "RYGYO", "SAFKR", "SAHOL", "SANEL", "SANFM", "SANKO", "SARKY",
-    "SASA", "SAYAS", "SDTTR", "SEKFK", "SEKUR", "SELEC", "SELGD", "SELVA",
-    "SEYKM", "SILVR", "SISE", "SKBNK", "SKYLP", "SMART", "SNGYO", "SNKRN",
-    "SODA", "SODSN", "SOKM", "SONME", "SRVGY", "SUMAS", "SUPRS", "SURGY",
-    "SUWEN", "TABGD", "TACTR", "TATGD", "TAVHL", "TBORG", "TCELL", "TDGYO",
-    "TEKTU", "TERA", "TEZOL", "THYAO", "TKFEN", "TKNSA", "TLMAN", "TMSN",
-    "TOASO", "TRCAS", "TRGYO", "TRILC", "TSKB", "TSPOR", "TTKOM", "TTRAK",
-    "TUCLK", "TUKAS", "TUPRS", "TUREX", "TURGG", "TURSG", "ULUFA", "ULUSE",
-    "ULUUN", "UMPAS", "UNLU", "USAK", "USDTR", "UTPYA", "UZER", "VAKBN",
-    "VAKFN", "VAKKO", "VANGD", "VAROL", "VCYTE", "VESBE", "VESTL", "VKFYO",
-    "VKGYO", "VKING", "YAPRK", "YATAS", "YAYLA", "YBTAS", "YEOTK", "YESIL",
-    "YGYO", "YIGIT", "YKBNK", "YKSLN", "YUNSA", "ZEDUR", "ZOREN", "ZRGYO"
-]
+with open("bist_tickers.txt", "r") as f:
+    BIST_TICKERS = [line.strip() for line in f if line.strip()]
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 }
 
-def parse_number(text):
-    """Convert Turkish number format to float. e.g. '22.533.072.000' or '110.723,7' """
-    if not text:
+def parse_number(raw):
+    """Convert Turkish number format to float."""
+    if not raw:
         return None
-    text = text.strip().replace('\xa0', '').replace(' ', '')
-    # Remove mn TL suffix
-    text = re.sub(r'mn\s*TL', '', text, flags=re.IGNORECASE).strip()
+    raw = raw.strip().replace('\xa0', '').replace(' ', '')
+    raw = re.sub(r'mn\s*TL', '', raw, flags=re.IGNORECASE).strip()
     try:
-        # Turkish format: dots as thousands sep, comma as decimal
-        if ',' in text:
-            text = text.replace('.', '').replace(',', '.')
+        if ',' in raw:
+            # e.g. 110.723,7 → thousands=dot, decimal=comma
+            raw = raw.replace('.', '').replace(',', '.')
         else:
-            text = text.replace('.', '')
-        return float(text)
+            # e.g. 22.533.072.000 → thousands=dot only
+            raw = raw.replace('.', '')
+        return float(raw)
     except:
         return None
 
@@ -92,13 +38,20 @@ def extract_after_keyword(text, keyword, chars=100):
     return text[idx + len(keyword): idx + len(keyword) + chars]
 
 def get_first_number(text):
-    """Extract the first number from a string."""
+    """Extract only the FIRST number — split on Turkish thousands pattern."""
     if not text:
         return None
-    # Match numbers with dots/commas
-    match = re.search(r'-?[\d]{1,3}(?:[.\d{3}])*(?:,\d+)?', text)
+    # First, try to find a number with comma decimal (mn TL format e.g. 110.723,7)
+    match = re.search(r'-?[\d]{1,3}(?:\.\d{3})*,\d+', text)
     if match:
         return parse_number(match.group())
+    # Otherwise find integer — must end with .000 or be standalone
+    # Split concatenated numbers: 22.533.072.0009.823... → take up to last .000
+    # Split on where a new number starts: digits after boundary
+    # Strategy: find all candidate numbers, return the first
+    matches = re.findall(r'-?(?:\d{1,3}\.)+\d{3}', text)
+    if matches:
+        return parse_number(matches[0])
     return None
 
 def detect_period(text):
@@ -131,6 +84,10 @@ def fetch_isyatirim(ticker):
             group = "December"
         elif month == 9:
             group = "September"
+        if month == 6:
+            group = "June"
+        elif month == 3:
+            group = "March"
         else:
             group = f"Month_{month}"
 
@@ -149,7 +106,7 @@ def fetch_isyatirim(ticker):
             ev = None
 
         # ── EBIT (Faaliyet Karı) ───────────────────────────────────────────
-        ebit_text = extract_after_keyword(text, "FAALİYET KARI (ZARARI)", 50)
+        ebit_text = extract_after_keyword(text, "Net Faaliyet Kar/Zararı", 50)
         ebit = get_first_number(ebit_text)  # full TRY
 
         # ── Balance Sheet ──────────────────────────────────────────────────
@@ -157,6 +114,10 @@ def fetch_isyatirim(ticker):
         current_liab_text        = extract_after_keyword(text, "Kısa Vadeli Yükümlülükler", 50)
         total_assets_text        = extract_after_keyword(text, "TOPLAM VARLIKLAR", 50)
         intangibles_text         = extract_after_keyword(text, "Maddi Olmayan Duran Varlıklar", 50)
+        fin_expense_text = extract_after_keyword(text, "Finansman Giderleri", 50)
+        fin_expense = get_first_number(fin_expense_text)
+        if fin_expense:
+            fin_expense = abs(fin_expense)  # her zaman pozitif al
 
         current_assets = get_first_number(current_assets_text)
         current_liab   = get_first_number(current_liab_text)
@@ -191,6 +152,7 @@ def fetch_isyatirim(ticker):
             "RoC":             roc,
             "MarketCap_mnTL":  market_cap,
             "NetDebt_mnTL":    net_debt,
+            "FinansmanGideri": fin_expense,
         }
 
     except Exception as e:
@@ -203,6 +165,8 @@ def rank_group(df, group_name, filename):
     g = g.dropna(subset=["EarningsYield", "RoC"])
     g = g[g["EarningsYield"] > 0]
     g = g[g["RoC"] > 0]
+    # Finansman gideri faaliyet karının %80'inden fazlaysa ele
+    g = g[g["FinansmanGideri"].isna() | (g["FinansmanGideri"] / g["EBIT"] < 0.80)]
 
     if len(g) == 0:
         print(f"No valid stocks in {group_name} group")
@@ -217,6 +181,9 @@ def rank_group(df, group_name, filename):
     g["EarningsYield"] = (g["EarningsYield"] * 100).round(2)
     g["RoC"]           = (g["RoC"] * 100).round(2)
 
+    from datetime import datetime
+    date_str = datetime.now().strftime('%Y%m%d')
+    filename = filename.replace('.csv', f'_{date_str}.csv')
     g.to_csv(filename, index=True, index_label="Rank")
     print(f"\nSaved {len(g)} stocks → {filename}")
     print(g[["Ticker", "Name", "Period", "EarningsYield", "RoC", "EY_Rank", "RoC_Rank", "Magic_Score"]].head(20).to_string())
@@ -243,6 +210,8 @@ def main():
     # ── Rank and save each group separately ───────────────────────────────
     rank_group(df, "December",  "magic_formula_december.csv")
     rank_group(df, "September", "magic_formula_september.csv")
+    rank_group(df, "March",     "magic_formula_march.csv")
+    rank_group(df, "June",      "magic_formula_june.csv")
 
 
 if __name__ == "__main__":
