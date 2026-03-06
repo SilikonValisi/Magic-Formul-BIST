@@ -121,8 +121,7 @@ def fetch_isyatirim(ticker):
         if fin_expense:
             fin_expense = abs(fin_expense)  # her zaman pozitif al
         volume_text = extract_after_keyword(text, "Ort Hacim (mn$) 3A/12A", 30)
-        volume_mn_usd = get_first_number(volume_text)
-        volume_mn_tl = volume_mn_usd * 44 if volume_mn_usd else None
+        volume_mn_tl = get_first_number(volume_text)
 
         current_assets = get_first_number(current_assets_text)
         current_liab   = get_first_number(current_liab_text)
@@ -175,7 +174,7 @@ def rank_group(df, group_name, filename):
     g = g[g["FinansmanGideri"].isna() | (g["FinansmanGideri"] / g["EBIT"] < 0.80)]
     g = g[g["MarketCap_mnTL"] >= 1000]
     g = g[g["Volume_mnTL"].isna() | (g["Volume_mnTL"] >= 5)]
-    
+
     if len(g) == 0:
         print(f"No valid stocks in {group_name} group")
         return
