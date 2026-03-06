@@ -5,6 +5,8 @@ import re
 import time
 import warnings
 warnings.filterwarnings('ignore')
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 with open("bist_tickers.txt", "r") as f:
     BIST_TICKERS = [line.strip() for line in f if line.strip()]
@@ -84,7 +86,7 @@ def fetch_isyatirim(ticker):
             group = "December"
         elif month == 9:
             group = "September"
-        if month == 6:
+        elif month == 6:
             group = "June"
         elif month == 3:
             group = "March"
@@ -118,6 +120,9 @@ def fetch_isyatirim(ticker):
         fin_expense = get_first_number(fin_expense_text)
         if fin_expense:
             fin_expense = abs(fin_expense)  # her zaman pozitif al
+        volume_text = extract_after_keyword(text, "Ort Hacim (mn$) 3A/12A", 30)
+        volume_mn_usd = get_first_number(volume_text)
+        volume_mn_tl = volume_mn_usd * 44 if volume_mn_usd else None
 
         current_assets = get_first_number(current_assets_text)
         current_liab   = get_first_number(current_liab_text)
@@ -153,6 +158,7 @@ def fetch_isyatirim(ticker):
             "MarketCap_mnTL":  market_cap,
             "NetDebt_mnTL":    net_debt,
             "FinansmanGideri": fin_expense,
+            "Volume_mnTL": volume_mn_tl,
         }
 
     except Exception as e:
@@ -167,7 +173,9 @@ def rank_group(df, group_name, filename):
     g = g[g["RoC"] > 0]
     # Finansman gideri faaliyet karının %80'inden fazlaysa ele
     g = g[g["FinansmanGideri"].isna() | (g["FinansmanGideri"] / g["EBIT"] < 0.80)]
-
+    g = g[g["MarketCap_mnTL"] >= 1000]
+    g = g[g["Volume_mnTL"].isna() | (g["Volume_mnTL"] >= 5)]
+    
     if len(g) == 0:
         print(f"No valid stocks in {group_name} group")
         return
@@ -192,22 +200,27 @@ def rank_group(df, group_name, filename):
 def main():
     results = []
     total = len(BIST_TICKERS)
+    completed = 0
 
-    for i, ticker in enumerate(BIST_TICKERS):
-        data = fetch_isyatirim(ticker)
-        if data and data["EarningsYield"] is not None and data["RoC"] is not None:
-            results.append(data)
-            print(f"[{i+1}/{total}] {ticker} - {data['Period']} ({data['Group']}) | EY: {data['EarningsYield']:.4f} | RoC: {data['RoC']:.4f}")
-        else:
-            print(f"[{i+1}/{total}] {ticker} - SKIPPED")
-        time.sleep(0.3)  # be polite to the server
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(fetch_isyatirim, ticker): ticker for ticker in BIST_TICKERS}
+        
+        for future in as_completed(futures):
+            ticker = futures[future]
+            completed += 1
+            data = future.result()
+            if data and data["EarningsYield"] is not None and data["RoC"] is not None:
+                results.append(data)
+                print(f"[{completed}/{total}] {ticker} - {data['Period']} ({data['Group']}) | EY: {data['EarningsYield']:.4f} | RoC: {data['RoC']:.4f}")
+            else:
+                print(f"[{completed}/{total}] {ticker} - SKIPPED")
+            time.sleep(0.1)  # 0.3'ten 0.1'e düşür
 
     df = pd.DataFrame(results)
     df.to_csv("bist_greenblatt_raw.csv", index=False)
     print(f"\nTotal fetched: {len(df)} stocks")
     print(df["Group"].value_counts())
 
-    # ── Rank and save each group separately ───────────────────────────────
     rank_group(df, "December",  "magic_formula_december.csv")
     rank_group(df, "September", "magic_formula_september.csv")
     rank_group(df, "March",     "magic_formula_march.csv")
