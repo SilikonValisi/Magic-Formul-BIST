@@ -106,7 +106,7 @@ def fetch_isyatirim(ticker):
             ev = None
 
         # ── EBIT (Faaliyet Karı) ───────────────────────────────────────────
-        ebit_text = extract_after_keyword(text, "Net Faaliyet Kar/Zararı", 50)
+        ebit_text = extract_after_keyword(text, "FAALİYET KARI (ZARARI)", 50)
         ebit = get_first_number(ebit_text)  # full TRY
 
         # ── Balance Sheet ──────────────────────────────────────────────────
