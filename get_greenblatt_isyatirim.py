@@ -171,7 +171,8 @@ def rank_group(df, group_name, filename):
     g = g[g["EarningsYield"] > 0]
     g = g[g["RoC"] > 0]
     # Finansman gideri faaliyet karının %80'inden fazlaysa ele
-    g = g[g["FinansmanGideri"].isna() | (g["FinansmanGideri"] / g["EBIT"] < 0.80)]
+    # Belki kötü bir şey değildir borçlanmak ayrıca formülde de yok - siliyorum
+    #g = g[g["FinansmanGideri"].isna() | (g["FinansmanGideri"] / g["EBIT"] < 0.80)]
     g = g[g["MarketCap_mnTL"] >= 1000]
     g = g[g["Volume_mnTL"].isna() | (g["Volume_mnTL"] >= 5)]
 

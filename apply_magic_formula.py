@@ -1,32 +1,36 @@
 import pandas as pd
 from datetime import datetime
 
-# Load CSV
-df = pd.read_csv("bist_greenblatt.csv")  # replace with your file path
+# ── Load raw data ──────────────────────────────────────────────────────────────
+df = pd.read_csv("bist_greenblatt_raw.csv")
+print(f"Total stocks in raw file: {len(df)}")
+print(f"Groups: {df['Group'].value_counts().to_dict()}")
 
-# ----------------------------
-# Step 1: Rank the Stocks
-# ----------------------------
-df['ROC_Rank'] = df['RoC'].rank(ascending=False)        # Higher ROC = better
-df['EY_Rank'] = df['EarningsYield'].rank(ascending=False)  # Higher EY = cheaper
+# ── Filters ────────────────────────────────────────────────────────────────────
+df = df.dropna(subset=["EarningsYield", "RoC"])
+df = df[df["EarningsYield"] > 0]                                          # EBIT pozitif
+df = df[df["RoC"] > 0]                                                    # RoC pozitif
+df = df[df["MarketCap_mnTL"] >= 1000]                                     # Market cap > 1 milyar TL
+df = df[df["Volume_mnTL"].isna() | (df["Volume_mnTL"] >= 5)]       # Volume > 0.1 mn$/gün
+#df = df[df["FinansmanGideri"].isna() | (df["FinansmanGideri"] / df["EBIT"] < 0.80)]  # Faiz < %80 EBIT
 
-# Combined Magic Formula Score
-df['MF_Score'] = df['ROC_Rank'] + df['EY_Rank']
+print(f"\nAfter filters: {len(df)} stocks")
 
-# Sort by Magic Formula Score (lowest = best)
-df_sorted = df.sort_values('MF_Score')
+# ── Rank ───────────────────────────────────────────────────────────────────────
+df["EY_Rank"]    = df["EarningsYield"].rank(ascending=False, method="min")
+df["RoC_Rank"]   = df["RoC"].rank(ascending=False, method="min")
+df["Magic_Score"] = df["EY_Rank"] + df["RoC_Rank"]
+df = df.sort_values("Magic_Score").reset_index(drop=True)
+df.index += 1
 
-# ----------------------------
-# Step 2: Show Top N Stocks including individual ranks
-# ----------------------------
-top_n = 20
-print(df_sorted[['Ticker', 'Name', 'RoC', 'ROC_Rank', 'EarningsYield', 'EY_Rank', 'MF_Score']].head(top_n))
+df["EarningsYield"] = (df["EarningsYield"] * 100).round(2)
+df["RoC"]           = (df["RoC"] * 100).round(2)
 
-# ----------------------------
-# Step 3: Save all ranked stocks to a new CSV with date
-# ----------------------------
-today_str = datetime.today().strftime('%Y-%m-%d')
-filename = f"bist_greenblatt_ranked_{today_str}.csv"
-df_sorted.to_csv(filename, index=False)
+# ── Save ───────────────────────────────────────────────────────────────────────
+date_str = datetime.now().strftime('%Y%m%d')
+filename = f"magic_formula_all_{date_str}.csv"
+df.to_csv(filename, index=True, index_label="Rank")
 
-print(f"\n✅ All ranked stocks saved to '{filename}'")
+print(f"\nSaved → {filename}")
+print(f"\nTop 30:")
+print(df[["Ticker", "Name", "Period", "Group", "EarningsYield", "RoC", "EY_Rank", "RoC_Rank", "Magic_Score"]].head(30).to_string())
