@@ -14,8 +14,8 @@ HEADERS = {
 
 TTM_CUTOFF = datetime.now() - timedelta(days=365)
 
-INPUT_CSV  = "magic_formula_december_20260306.csv"
-OUTPUT_CSV = "magic_formula_december_20260306.csv"
+INPUT_CSV  = "magic_formula_december_20260309.csv"
+OUTPUT_CSV = "magic_formula_december_20260309.csv"
 
 # ── USD/TRY rate cache to avoid redundant API calls ───────────────────────────
 
