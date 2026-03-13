@@ -2,7 +2,8 @@ import pandas as pd
 from datetime import datetime
 
 # ── Load raw data ──────────────────────────────────────────────────────────────
-df = pd.read_csv("bist_greenblatt_raw.csv")
+date_str = datetime.now().strftime("%Y%m%d")
+df = pd.read_csv(f"bist_greenblatt_raw_{date_str}.csv")
 print(f"Total stocks in raw file: {len(df)}")
 print(f"Groups: {df['Group'].value_counts().to_dict()}")
 

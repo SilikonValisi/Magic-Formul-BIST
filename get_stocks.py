@@ -11,6 +11,7 @@ BASE_URL = "https://www.isyatirim.com.tr/tr-tr/analiz/hisse/Sayfalar/Temel-Deger
 # 0001 = Bankacılık | 0051 = Aracı Kurumlar | 0040 = Sigorta | 0014 = Faktoring
 FINANCIAL_SECTOR_CODES = {
     "0001": "Bankacılık (Banks)",
+    "0015": "gyo ",
     "0051": "Aracı Kurumlar (Brokerages)",
     "0040": "Sigorta (Insurance)",
     "0014": "Faktoring (Factoring)",

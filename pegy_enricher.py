@@ -7,6 +7,7 @@ import warnings
 warnings.filterwarnings('ignore')
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
+from datetime import datetime
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
@@ -14,8 +15,11 @@ HEADERS = {
 
 TTM_CUTOFF = datetime.now() - timedelta(days=365)
 
-INPUT_CSV  = "magic_formula_december_20260309.csv"
-OUTPUT_CSV = "magic_formula_december_20260309.csv"
+
+date_str = datetime.now().strftime('%Y%m%d')
+filename = f"magic_formula_all_{date_str}.csv"
+INPUT_CSV  = filename
+OUTPUT_CSV = filename
 
 # ── USD/TRY rate cache to avoid redundant API calls ───────────────────────────
 
