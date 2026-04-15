@@ -254,7 +254,7 @@ def rank_group(df, group_name, filename):
     from datetime import datetime
     date_str = datetime.now().strftime('%Y%m%d')
     filename = filename.replace('.csv', f'_{date_str}.csv')
-    g.to_csv(filename, index=True, index_label="Rank")
+    #g.to_csv(filename, index=True, index_label="Rank")
     print(f"\nSaved {len(g)} stocks → {filename}")
     print(g[["Ticker", "Name", "Period", "EarningsYield", "RoC", "EY_Rank", "RoC_Rank", "Magic_Score"]].head(20).to_string())
 
