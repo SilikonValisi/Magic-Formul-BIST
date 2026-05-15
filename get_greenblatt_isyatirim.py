@@ -73,7 +73,7 @@ def fetch_api(ticker: str, year: int, period: int, group: str = "XI_29") -> list
     """
     url = (
         f"{BASE_URL}/_layouts/15/IsYatirim.Website/Common/Data.aspx/MaliTablo"
-        f"?companyCode={ticker}&exchange=USD&financialGroup={group}"
+        f"?companyCode={ticker}&exchange=TRY&financialGroup={group}"
         f"&year1={year}&period1={period}"
         f"&year2={year}&period2={period}"
         f"&year3={year}&period3={period}"
